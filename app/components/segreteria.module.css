@@ -1,0 +1,70 @@
+.wrapperSegreteria {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(180px, 1fr));
+  background: #e2f3f6;
+  padding: 2rem 1rem;
+}
+.segreteria {
+  margin: 0 1rem;
+}
+.segreteria h3 {
+  font-size: 1rem;
+}
+.info {
+  margin: 0 0 0 1rem;
+  text-align: center;
+}
+.wrapperSegreteria figure {
+  background-image: url(/spriteCorsi.png);
+  background-repeat: no-repeat;
+  background-position-x: 0;
+  background-position-y: 0;
+  width: 60px;
+  height: 50px;
+  margin: 0 auto 10px auto;
+  display: block;
+  transition: all ease-in-out 0.3s;
+}
+.segreteriaOrganizzativa:hover figure {
+  background-position-y: -60px;
+}
+.email figure {
+  background-position-x: -535px;
+}
+.email:hover figure {
+  background-position-y: -60px;
+}
+.phone figure {
+  background-position-x: -130px;
+}
+.phone:hover figure {
+  background-position-y: -60px;
+}
+.mobile figure {
+  background-position-x: -400px;
+}
+.fax:hover figure {
+  background-position-y: -60px;
+}
+.fax figure {
+  background-position-x: -266px;
+}
+.mobile:hover figure {
+  background-position-y: -60px;
+}
+@media screen and (max-width: 1200px) {
+  .wrapperSegreteria {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+}
+@media screen and (max-width: 600px) {
+  .wrapperSegreteria {
+    grid-template-columns: 1fr;
+  }
+  .info {
+    margin: 1rem 0;
+  }
+  .segreteria h3 {
+    text-align: center;
+  }
+}

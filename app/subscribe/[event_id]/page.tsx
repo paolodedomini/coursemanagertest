@@ -9,7 +9,7 @@ import {
   IRegistrationRequest,
   IRegistrationResponse,
 } from "@/app/models";
-
+import Segreteria from "@/app/components/segreteria";
 export default function RegistrationForm() {
   const [formdata, setFormData] = useState<IEventResponse | null>(null);
   const [isLoading, setLoading] = useState(true);
@@ -82,6 +82,12 @@ export default function RegistrationForm() {
     );
   console.log("openDescription", openDescription);
 
+  //funzione per rimuovere html usata per il controllo dei campi vuoti
+  function strip(html: string) {
+    let doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent || "";
+  }
+
   return (
     <>
       <header className={styles.header}>
@@ -127,31 +133,38 @@ export default function RegistrationForm() {
                   }`}
                   onClick={() => setOpenDescription("")}
                 ></div>
-                {formdata?.event_speakers?.map((speaker) => (
-                  <div key={speaker.speaker_name}>
-                    <h4
-                      onClick={() => setOpenDescription(speaker.speaker_name)}
-                    >
-                      {speaker.speaker_name}
-                    </h4>
-                    <div className={styles.speaker}>
-                      {openDescription === speaker.speaker_name && (
-                        <div className={`${styles.speakerDescription} `}>
-                          <p
-                            dangerouslySetInnerHTML={{
-                              __html: speaker.speaker_bio,
-                            }}
-                          />
-                          <a href={`mailto:${speaker.speaker_email}`}>Mail</a>
-                        </div>
-                      )}
+                {formdata?.event_speakers?.map((speaker) => {
+                  return (
+                    <div key={speaker.speaker_name}>
+                      <h4
+                        onClick={() => setOpenDescription(speaker.speaker_name)}
+                      >
+                        {speaker.speaker_name}
+                      </h4>
+                      <div className={styles.speaker}>
+                        {openDescription === speaker.speaker_name && (
+                          <div className={`${styles.speakerDescription} `}>
+                            {strip(speaker.speaker_bio) !== "" && (
+                              <p
+                                dangerouslySetInnerHTML={{
+                                  __html: speaker.speaker_bio,
+                                }}
+                              />
+                            )}
+                            <a href={`mailto:${speaker.speaker_email}`}>Mail</a>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
           <div>
+            {formdata?.event_organization && (
+              <Segreteria data={formdata?.event_organization} />
+            )}
             {formSuccess && (
               <div className={styles.success}>
                 Grazie per esserti registrato!

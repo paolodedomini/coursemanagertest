@@ -11,6 +11,13 @@ type speaker = {
     speaker_instagram: string;
     speaker_image: string;
 }
+export type organization = {
+    location_name?: string;
+    location_email?: string;
+    location_phone?: string;
+    location_mobile?: string;
+    location_fax?: string;
+};
 export interface IEventResponse {
     event_code: string;
     event_title: string;
@@ -19,6 +26,7 @@ export interface IEventResponse {
     event_areas: string[];
     event_speakers: speaker[];
     event_notes: string;
+    event_organization: organization;
 }
 
 export interface IRegistrationRequest {
