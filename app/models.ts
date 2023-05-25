@@ -1,8 +1,24 @@
+
+type speaker = {
+    speaker_name: string;
+    speaker_bio: string;
+    speaker_email: string;
+    speaker_phone: string;
+    speaker_website: string;
+    speaker_twitter: string;
+    speaker_facebook: string;
+    speaker_linkedin: string;
+    speaker_instagram: string;
+    speaker_image: string;
+}
 export interface IEventResponse {
     event_code: string;
     event_title: string;
     event_description: string;
     event_registration_url: string;
+    event_areas: string[];
+    event_speakers: speaker[];
+    event_notes: string;
 }
 
 export interface IRegistrationRequest {
