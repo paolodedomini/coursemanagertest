@@ -1,5 +1,5 @@
 "use client";
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 import axios, { AxiosResponse } from "axios";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
