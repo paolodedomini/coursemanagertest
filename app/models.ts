@@ -27,21 +27,37 @@ export interface IEventResponse {
     event_speakers: speaker[];
     event_notes: string;
     event_organization: organization;
+    event_partner_categories: string[];
+    event_partner_titles: string[];
 }
 
 export interface IRegistrationRequest {
     event_code: string;
-    attendee_firstname: string;
-    attendee_lastname: string;
-    attendee_email: string;
+    firstname: string;
+    lastname: string;
+    email: string;
+    street: string;
+    zip: string;
+    city: string;
+    state_id: string;
+    country_id: string;
+    phone: string;
+    mobile: string;
+    fax?: string;
+    pec?: string;
+    customer_id?: string;
+    fiscalcode: string;
+    title?: string;
+    note?: string;
+    qualification?: string;
 }
 
-
 export interface IRegistrationResponse {
-    event_registration_id: string;
+    registration_id: string;
     event_code: string;
-    event_registration_date: string;
-    attendee_firstname: string;
-    attendee_lastname: string;
-    attendee_email: string;
+    title: string;
+    firstname: string;
+    lastname: string;
+    email: string;
+    created_at: Date;
 }

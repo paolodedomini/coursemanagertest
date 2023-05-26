@@ -11,15 +11,54 @@ import {
 } from "@/app/models";
 import Segreteria from "@/app/components/segreteria";
 export default function RegistrationForm() {
-  const [formdata, setFormData] = useState<IEventResponse | null>(null);
+  const [eventdata, setEventdata] = useState<IEventResponse | null>(null);
   const [isLoading, setLoading] = useState(true);
   const [noData, setNoData] = useState<boolean | null>(null);
-  const [firstname, setFirstname] = useState("");
-  const [lastname, setLastname] = useState("");
-  const [email, setEmail] = useState("");
   const [formSuccess, setFormSuccess] = useState(false);
   const [openDescription, setOpenDescription] = useState("");
   const params = useParams();
+
+  const [status, setStatus] = useState({
+    submitted: false,
+    submitting: false,
+    info: { error: false, msg: "" }
+  });
+
+  const [inputs, setInputs] = useState<IRegistrationRequest>({
+    event_code: params.event_id,
+    email: "",
+    pec: "",
+    firstname: "",
+    lastname: "",
+    phone: "",
+    mobile: "",
+    fax: "",
+    street: "",
+    city: "",
+    zip: "",
+    state_id: "",
+    country_id: "",
+    fiscalcode: "",
+    qualification: "",
+    note: "",
+    title: "",
+  });
+
+  const handleOnChange = (e: {
+    persist: () => void;
+    target: { id: string; value: string };
+  }) => {
+    e.persist();
+    setInputs((prev) => ({
+      ...prev,
+      [e.target.id]: e.target.value
+    }));
+    setStatus({
+      submitted: false,
+      submitting: false,
+      info: { error: false, msg: "" }
+    });
+  };
 
   useEffect(() => {
     axios
@@ -28,7 +67,7 @@ export default function RegistrationForm() {
           params.event_id
       )
       .then((response) => {
-        setFormData(response.data);
+        setEventdata(response.data);
         setLoading(false);
       })
       .catch((error) => {
@@ -39,18 +78,13 @@ export default function RegistrationForm() {
 
   const createRegistration = async () => {
     // 👇 Send a fetch request to Backend API.
-    if (!formdata) return;
+    if (!eventdata) return;
     const { data, status } = await axios.post<
       IRegistrationRequest,
       AxiosResponse<IRegistrationResponse>
     >(
-      formdata.event_registration_url,
-      JSON.stringify({
-        firstname,
-        lastname,
-        email,
-        event_code: params.event_id,
-      }),
+      eventdata.event_registration_url,
+      JSON.stringify(inputs),
       {
         headers: {
           "Content-Type": "application/json",
@@ -73,14 +107,13 @@ export default function RegistrationForm() {
     return (
       <div className={styles.wrapperApi}>
         <div className={styles.api}>
-          <h4>No profile formdata</h4>{" "}
+          <h4>No profile eventdata</h4>{" "}
           <p>
             Errore 404, <br /> la risorsa non esiste
           </p>
         </div>
       </div>
     );
-  console.log("openDescription", openDescription);
 
   //funzione per rimuovere html usata per il controllo dei campi vuoti
   function strip(html: string) {
@@ -92,40 +125,40 @@ export default function RegistrationForm() {
     <>
       <header className={styles.header}>
         <div className={styles.wrapperHeader}>
-          <h1>{formdata?.event_title}</h1>
+          <h1>{eventdata?.event_title}</h1>
         </div>
 
-        {/*  <b>URL:</b> {formdata?.event_registration_url} */}
+        {/*  <b>URL:</b> {eventdata?.event_registration_url} */}
       </header>
       <main className={styles.main}>
         <div>
           <div className={styles.wrapperContent}>
             <div className={styles.contentLeft}>
-              {formdata?.event_description && (
+              {eventdata?.event_description && (
                 <p
                   dangerouslySetInnerHTML={{
-                    __html: formdata?.event_description,
+                    __html: eventdata?.event_description,
                   }}
                 />
               )}
-              <div className={styles.notes}>{formdata?.event_notes}</div>
+              <div className={styles.notes}>{eventdata?.event_notes}</div>
             </div>
 
             <div className={styles.meta}>
               <span className={styles.codiceEvento}>
-                <b>Codice Evento:</b> {formdata?.event_code}
+                <b>Codice Evento:</b> {eventdata?.event_code}
               </span>
               <div className={styles.area}>
                 <b>Aree:</b>
                 <ul>
-                  {formdata?.event_areas?.map((area) => (
+                  {eventdata?.event_areas?.map((area) => (
                     <li key={area}>{area}</li>
                   ))}
                 </ul>
               </div>
               <div className={styles.speakers}>
                 <span className={styles.title}>
-                  <b>Speakers:</b>
+                  <b>Relatori:</b>
                 </span>
                 <div
                   className={`${styles.speakerBackground} ${
@@ -133,7 +166,7 @@ export default function RegistrationForm() {
                   }`}
                   onClick={() => setOpenDescription("")}
                 ></div>
-                {formdata?.event_speakers?.map((speaker) => {
+                {eventdata?.event_speakers?.map((speaker) => {
                   return (
                     <div key={speaker.speaker_name}>
                       <h4
@@ -162,8 +195,8 @@ export default function RegistrationForm() {
             </div>
           </div>
           <div>
-            {formdata?.event_organization && (
-              <Segreteria data={formdata?.event_organization} />
+            {eventdata?.event_organization && (
+              <Segreteria data={eventdata?.event_organization} />
             )}
             {formSuccess && (
               <div className={styles.success}>
@@ -186,27 +219,27 @@ export default function RegistrationForm() {
                           <label>Nome</label>
                           <input
                             type="text"
-                            name="firstname"
-                            value={firstname}
-                            onChange={(e) => setFirstname(e.target.value)}
+                            id="firstname"
+                            value={inputs.firstname}
+                            onChange={handleOnChange}
                           />
                         </div>
                         <div className={styles.formgroup}>
                           <label>Cognome</label>
                           <input
                             type="text"
-                            name="lastname"
-                            value={lastname}
-                            onChange={(e) => setLastname(e.target.value)}
+                            id="lastname"
+                            value={inputs.lastname}
+                            onChange={handleOnChange}
                           />
                         </div>
                         <div className={styles.formgroup}>
                           <label>Email</label>
                           <input
+                            id="email"
                             type="email"
-                            name="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            value={inputs.email}
+                            onChange={handleOnChange}
                           />
                         </div>
                       </div>
@@ -214,39 +247,35 @@ export default function RegistrationForm() {
                       <div className={styles.formWrapper}>
                         <div className={styles.formgroup}>
                           <label>Qualifica</label>
-                          <select name="qualification">
+                          <select name="qualification"
+                            onChange={handleOnChange}
+                            value={inputs.qualification}
+                            id="qualification"
+                          >
                             <option value="">Seleziona qualifica</option>
-                            <option value="A">A</option>
-                            <option value="B">B</option>
-                            <option value="C">C</option>
-                            <option value="D">D</option>
-                            <option value="E">E</option>
-                            <option value="F">F</option>
-                            <option value="G">G</option>
-                            <option value="H">H</option>
-                            <option value="I">I</option>
-                            <option value="J">J</option>
-                            <option value="K">K</option>
-                            <option value="L">L</option>
-                            <option value="M">M</option>
-                            <option value="N">N</option>
-                            <option value="O">O</option>
-                            <option value="P">P</option>
+                            {eventdata?.event_partner_categories?.map((option) => (
+                              <option key={option} value={option}>{option}</option>
+                            ))}
                           </select>
                         </div>
                         <div className={styles.formgroup}>
-                          <label>Ragione Sociale</label>
-                          <input type="text" name="company" />
+                          <label>Titolo</label>
+                          <select
+                            id="title"
+                            value={inputs.title}
+                            onChange={handleOnChange}
+                          >
+                            <option value="">Seleziona titolo</option>
+                            {eventdata?.event_partner_titles?.map((option) => (
+                              <option key={option} value={option}>{option}</option>
+                            ))}
+                          </select>
                         </div>
                       </div>
                       <div className={styles.formWrapper}>
                         <div className={styles.formgroup}>
                           <label>Codice Fiscale</label>
-                          <input type="text" name="tax_code" />
-                        </div>
-                        <div className={styles.formgroup}>
-                          <label>Partita IVA</label>
-                          <input type="text" name="vat_number" />
+                          <input type="text" id="fiscalcode" value={inputs.fiscalcode} onChange={handleOnChange}/>
                         </div>
                       </div>
                     </div>
@@ -254,37 +283,37 @@ export default function RegistrationForm() {
                       <div className={styles.formWrapper}>
                         <div className={styles.formgroup}>
                           <label>Indirizzo</label>
-                          <input type="text" name="address" />
+                          <input type="text" id="street" value={inputs.street} onChange={handleOnChange}/>
                         </div>
                         <div className={styles.formgroup}>
                           <label>Cap</label>
-                          <input type="text" name="city" />
+                          <input type="text" id="zip" value={inputs.zip} onChange={handleOnChange}/>
                         </div>
                         <div className={styles.formgroup}>
                           <label>Città</label>
-                          <input type="text" name="city" />
+                          <input type="text" id="city" value={inputs.city} onChange={handleOnChange}/>
                         </div>
                         <div className={styles.formgroup}>
                           <label>Provincia</label>
-                          <input type="text" name="province" />
+                          <input type="text" id="state_id" value={inputs.state_id} onChange={handleOnChange}/>
                         </div>
                       </div>
                       <div className={styles.formWrapper}>
                         <div className={styles.formgroup}>
                           <label>Telefono</label>
-                          <input type="text" name="phone" />
+                          <input type="text" id="phone" value={inputs.phone} onChange={handleOnChange}/>
                         </div>
                         <div className={styles.formgroup}>
                           <label>Cellulare</label>
-                          <input type="text" name="mobile" />
+                          <input type="text" id="mobile" value={inputs.mobile} onChange={handleOnChange}/>
                         </div>
                         <div className={styles.formgroup}>
                           <label>Fax</label>
-                          <input type="text" name="fax" />
+                          <input type="text" id="fax" value={inputs.fax} onChange={handleOnChange}/>
                         </div>
                         <div className={styles.formgroup}>
                           <label>PEC</label>
-                          <input type="text" name="pec" />
+                          <input type="text" id="pec" value={inputs.pec} onChange={handleOnChange}/>
                         </div>
                       </div>
                     </div>
@@ -326,7 +355,15 @@ export default function RegistrationForm() {
                     value={params.event_code}
                   />
                   <br />
-                  <button type="submit">Registrati</button>
+                  <button type="submit" disabled={status.submitting}>
+                    {!status.submitting
+                      ? !status.submitted
+                        ? "Registrati"
+                        : "Registrato"
+                      : "Registrazione..."}
+                  </button>
+                  {status.info.error && <div>Error: {status.info.msg}</div>}
+                  {!status.info.error && status.info.msg && <div>{status.info.msg}</div>}
                 </form>
               </div>
             )}
