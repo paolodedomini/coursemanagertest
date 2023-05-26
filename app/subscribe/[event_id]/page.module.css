@@ -8,8 +8,8 @@ header.header {
   margin: 0 auto;
   padding: 3rem 0;
 }
-.header .wrapperHeader h1 {
-}
+/* .header .wrapperHeader h1 {
+} */
 .wrapperContent {
   display: flex;
   margin: 0 1rem;
